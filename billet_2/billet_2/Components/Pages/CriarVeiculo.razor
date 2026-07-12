@@ -1,0 +1,123 @@
+@page "/criarveiculo"
+@using billet_2.Models
+@using Microsoft.AspNetCore.Components.Forms
+@rendermode RenderMode.InteractiveServer
+@inject billet_2.Services.VeiculoService VeiculoService
+@inject NavigationManager Navigation
+
+@* --- 1. NAVBAR --- *@
+<nav class="navbar-top">
+    <a href="/poslogin" class="brand-button">BiLleT*</a>
+</nav>
+
+@* --- 2. CONTEÚDO PRINCIPAL --- *@
+<main class="create-wrapper">
+    <div class="create-container">
+        <h1 class="create-title">Novo Veículo</h1>
+
+        @if (exibirSucesso)
+        {
+            <div class="alert alert-success text-center">
+                🎉 Veículo cadastrado com sucesso!
+            </div>
+        }
+
+        @if (exibirErro)
+        {
+            <div class="alert alert-danger text-center">
+                @mensagemErro
+            </div>
+        }
+
+        <EditForm Model="novoVeiculo" OnValidSubmit="SalvarVeiculo" class="create-form" FormName="CadastroVeiculo">
+            <DataAnnotationsValidator />
+
+            @* Modelo e Placa *@
+            <div class="form-row">
+                <div class="form-group">
+                    <label>MODELO</label>
+                    <InputText @bind-Value="novoVeiculo.Modelo" placeholder="Ex: Mercedes-Benz O500" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>PLACA</label>
+                    <InputText @bind-Value="novoVeiculo.Placa" placeholder="Ex: ABC-1234" class="form-control" />
+                </div>
+            </div>
+
+            @* Tipo do veículo *@
+            <div class="form-group">
+                <label>TIPO DO VEÍCULO</label>
+                <InputSelect @bind-Value="novoVeiculo.Tipo" class="form-control">
+                    <option value="">Selecione um tipo...</option>
+                    <option value="Convencional">Convencional</option>
+                    <option value="Executivo">Executivo</option>
+                    <option value="Leito">Leito</option>
+                    <option value="Micro-ônibus">Micro-ônibus</option>
+                    <option value="Van">Van</option>
+                </InputSelect>
+            </div>
+
+            @* Layout de assentos: Linhas e Colunas *@
+            <div class="form-row">
+                <div class="form-group">
+                    <label>NÚMERO DE FILEIRAS (LINHAS)</label>
+                    <InputNumber @bind-Value="novoVeiculo.Linhas" class="form-control" placeholder="Ex: 10" />
+                </div>
+                <div class="form-group">
+                    <label>NÚMERO DE COLUNAS POR FILEIRA</label>
+                    <InputNumber @bind-Value="novoVeiculo.Colunas" class="form-control" placeholder="Ex: 4" />
+                </div>
+            </div>
+
+            @* Capacidade calculada (exibição informativa) *@
+            @if (novoVeiculo.Linhas > 0 && novoVeiculo.Colunas > 0)
+            {
+                <div class="alert alert-info text-center">
+                    Capacidade total: <strong>@(novoVeiculo.Linhas * novoVeiculo.Colunas)</strong> assentos
+                </div>
+            }
+
+            @* Botões de Ação *@
+            <div class="form-actions">
+                <button type="button" @onclick='() => Navigation.NavigateTo("/poslogin")' class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-save" disabled="@estaProcessando">
+                    @(estaProcessando ? "Salvando..." : "Cadastrar Veículo")
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <p>&copy; 2026 Billet - Todos os direitos reservados.</p>
+</footer>
+
+@code {
+    private Veiculo novoVeiculo = new();
+    private bool estaProcessando = false;
+    private bool exibirSucesso = false;
+    private bool exibirErro = false;
+    private string mensagemErro = "";
+
+    private async Task SalvarVeiculo()
+    {
+        estaProcessando = true;
+
+        var response = await VeiculoService.CriarVeiculoAsync(novoVeiculo);
+
+        if (string.IsNullOrEmpty(response))
+        {
+            exibirErro = false;
+            exibirSucesso = true;
+            StateHasChanged();
+            await Task.Delay(2000);
+            Navigation.NavigateTo("/poslogin");
+        }
+        else
+        {
+            exibirErro = true;
+            mensagemErro = response;
+            estaProcessando = false;
+        }
+    }
+}

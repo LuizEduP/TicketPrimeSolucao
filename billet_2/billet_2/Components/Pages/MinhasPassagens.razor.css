@@ -1,0 +1,218 @@
+.navbar-top {
+    background-color: #1a1a1a;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    z-index: 20;
+    border-bottom: 2px solid #1a1a1a;
+}
+
+.brand-button {
+    font-family: 'TanNimbus', sans-serif;
+    font-size: 2.8rem;
+    color: #EDEDED;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+    .brand-button:hover {
+        color: #FFFFFF;
+        transform: scale(1.05);
+    }
+
+.navbar-top {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- BUSCA DE CPF --- */
+.cpf-search {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+    align-items: center;
+}
+
+    .cpf-search input {
+        flex: 1;
+        background: #111;
+        border: 1px solid #333;
+        padding: 16px 20px;
+        border-radius: 12px;
+        color: white;
+        font-size: 1rem;
+    }
+
+        .cpf-search input:focus {
+            outline: none;
+            border-color: #FFD700;
+        }
+
+    .cpf-search .btn-save {
+        background: #fff;
+        color: #000;
+        border: none;
+        padding: 16px 30px;
+        border-radius: 50px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.3s;
+        white-space: nowrap;
+    }
+
+        .cpf-search .btn-save:hover:not(:disabled) {
+            background: #FFD700;
+            transform: translateY(-2px);
+        }
+
+        .cpf-search .btn-save:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+/* --- FUNDO E ESTRUTURA --- */
+.tickets-wrapper {
+    background-color: #000;
+    min-height: 85vh;
+    padding: 60px 20px;
+    color: white;
+}
+
+.tickets-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.tickets-title {
+    font-family: 'TanNimbus', sans-serif;
+    font-size: 3.5rem;
+    margin-bottom: 50px;
+}
+
+/* --- CARD DA PASSAGEM --- */
+.ticket-item {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 30px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 25px;
+    gap: 30px;
+    transition: transform 0.3s ease;
+}
+
+    .ticket-item:hover {
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+.ticket-img-box {
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    flex-shrink: 0;
+}
+
+.ticket-icon {
+    font-size: 3rem;
+}
+
+.ticket-info {
+    flex-grow: 1;
+}
+
+    .ticket-info h3 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+.ticket-meta {
+    color: #888;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+/* Badges de Status */
+.badge-status {
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 8px 16px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-ativa {
+    background: rgba(46, 204, 113, 0.1);
+    color: #2ecc71;
+    border: 1px solid #2ecc71;
+}
+
+.status-cancelada {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+.status-utilizada {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    border: 1px solid #3498db;
+}
+
+.ticket-date {
+    margin-left: 15px;
+    color: #555;
+    font-weight: 600;
+}
+
+.cupom-info {
+    color: #FFD700;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+/* Preço e Botão Cancelar */
+.ticket-action-price {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ticket-price {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin-bottom: 15px;
+}
+
+.btn-remove {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.btn-add-more {
+    background: none;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}

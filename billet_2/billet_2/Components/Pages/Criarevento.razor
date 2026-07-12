@@ -1,0 +1,119 @@
+@page "/criarevento"
+@using billet_2.Models
+@using Microsoft.AspNetCore.Components.Forms
+@rendermode RenderMode.InteractiveServer
+@inject billet_2.Services.EventoService EventoService
+@inject NavigationManager Navigation
+
+@* --- 1. NAVBAR --- *@
+<nav class="navbar-top">
+    <a href="/poslogin" class="brand-button">BiLleT*</a>
+</nav>
+
+@* --- 2. CONTEÚDO PRINCIPAL --- *@
+<main class="create-wrapper">
+    <div class="create-container">
+        <h1 class="create-title">Novo Evento</h1>
+        
+        @if (exibirSucesso)
+        {
+            <div class="alert alert-success text-center">
+                🎉 Evento publicado com sucesso!
+            </div>
+        }
+        
+        @if(exibirErro){
+            <div class="alert alert-danger text-center">
+                @mensagemErro
+            </div>
+        }
+
+        <EditForm Model="novoEvento" OnValidSubmit="SalvarEvento" class="create-form" FormName="CadastroEvento">
+            <DataAnnotationsValidator />
+
+            @* Título (Mapeado para Nome) *@
+            <div class="form-group">
+                <label>TÍTULO DO EVENTO</label>
+                <InputText @bind-Value="novoEvento.Nome" placeholder="Ex: Show de Rock Internacional" class="form-control" />
+            </div>
+
+            @* Data e Horário (Combinados no código) *@
+            <div class="form-row">
+                <div class="form-group">
+                    <label>DATA E HORA</label>
+                    <InputDate @bind-Value="novoEvento.Data" Type="InputDateType.DateTimeLocal" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>QUANTIDADE DE INGRESSOS</label>
+                    <InputNumber @bind-Value="novoEvento.QuantidadeIngressos" class="form-control" placeholder="0" />
+                </div>
+            </div>
+
+            @* Local *@
+            <div class="form-group">
+                <label>LOCAL</label>
+                <InputText @bind-Value="novoEvento.Local" placeholder="Ex: Teatro Municipal" class="form-control" />
+            </div>
+
+            @* Sobre (Mapeado para Descricao) *@
+            <div class="form-group">
+                <label>SOBRE O EVENTO</label>
+                <InputTextArea @bind-Value="novoEvento.Descricao" rows="4" placeholder="Descreva os detalhes..." class="form-control" />
+            </div>
+
+            @* Valores *@
+            <div class="form-row">
+                <div class="form-group">
+                    <label>VALOR DO INGRESSO (R$)</label>
+                    <InputNumber @bind-Value="novoEvento.ValorIngresso" placeholder="0,00" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>URL DA IMAGEM (BANNER)</label>
+                    <InputText @bind-Value="novoEvento.FotoUrl" placeholder="Ex: bonner.webp" class="form-control" />
+                </div>
+            </div>
+
+            @* Botões de Ação *@
+            <div class="form-actions">
+                <button type="button" @onclick='() => Navigation.NavigateTo("/poslogin")' class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-save" disabled="@estaProcessando">
+                    @(estaProcessando ? "Salvando..." : "Publicar Evento")
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <p>&copy; 2026 Billet - Todos os direitos reservados.</p>
+</footer>
+
+@code {
+    private Evento novoEvento = new();
+    private bool estaProcessando = false;
+    private bool exibirSucesso = false;
+    private bool exibirErro = false;
+    private string mensagemErro = "";
+
+    private async Task SalvarEvento()
+    {
+        estaProcessando = true;
+
+        var response = await EventoService.CriarEventoAsync(novoEvento);
+
+        if (string.IsNullOrEmpty(response))
+        {
+            exibirErro = false;
+            exibirSucesso = true;
+            StateHasChanged();
+            await Task.Delay(2000);
+            Navigation.NavigateTo("/poslogin");
+        }
+        else
+        {         
+            exibirErro = true;
+            mensagemErro = response;
+            estaProcessando = false;
+        }
+    }
+}

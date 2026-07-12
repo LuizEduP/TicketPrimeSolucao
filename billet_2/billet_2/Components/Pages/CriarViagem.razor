@@ -1,0 +1,131 @@
+@page "/criarviagem"
+@using billet_2.Models
+@using Microsoft.AspNetCore.Components.Forms
+@rendermode RenderMode.InteractiveServer
+@inject billet_2.Services.ViagemService ViagemService
+@inject NavigationManager Navigation
+
+@* --- 1. NAVBAR --- *@
+<nav class="navbar-top">
+    <a href="/poslogin" class="brand-button">BiLleT*</a>
+</nav>
+
+@* --- 2. CONTEÚDO PRINCIPAL --- *@
+<main class="create-wrapper">
+    <div class="create-container">
+        <h1 class="create-title">Nova Viagem</h1>
+
+        @if (exibirSucesso)
+        {
+            <div class="alert alert-success text-center">
+                🎉 Viagem criada com sucesso!
+            </div>
+        }
+
+        @if (exibirErro)
+        {
+            <div class="alert alert-danger text-center">
+                @mensagemErro
+            </div>
+        }
+
+        <EditForm Model="novaViagem" OnValidSubmit="SalvarViagem" class="create-form" FormName="CadastroViagem">
+            <DataAnnotationsValidator />
+
+            @* Origem e Destino *@
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ORIGEM</label>
+                    <InputText @bind-Value="novaViagem.Origem" placeholder="Ex: São Paulo - SP" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>DESTINO</label>
+                    <InputText @bind-Value="novaViagem.Destino" placeholder="Ex: Rio de Janeiro - RJ" class="form-control" />
+                </div>
+            </div>
+
+            @* Datas: Partida, Chegada, Volta *@
+            <div class="form-row">
+                <div class="form-group">
+                    <label>DATA DE PARTIDA</label>
+                    <InputDate @bind-Value="novaViagem.DataPartida" Type="InputDateType.DateTimeLocal" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>DATA DE CHEGADA</label>
+                    <InputDate @bind-Value="novaViagem.DataChegada" Type="InputDateType.DateTimeLocal" class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>DATA DE VOLTA (opcional — apenas para ida e volta)</label>
+                <InputDate @bind-Value="novaViagem.DataVolta" Type="InputDateType.DateTimeLocal" class="form-control" />
+            </div>
+
+            @* Veículo e Preço *@
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ID DO VEÍCULO</label>
+                    <InputNumber @bind-Value="novaViagem.VeiculoId" class="form-control" placeholder="1" />
+                </div>
+                <div class="form-group">
+                    <label>PREÇO BASE (R$)</label>
+                    <InputNumber @bind-Value="novaViagem.PrecoBase" placeholder="0,00" class="form-control" />
+                </div>
+            </div>
+
+            @* Descrição *@
+            <div class="form-group">
+                <label>DESCRIÇÃO DA VIAGEM</label>
+                <InputTextArea @bind-Value="novaViagem.Descricao" rows="4" placeholder="Descreva os detalhes da viagem..." class="form-control" />
+            </div>
+
+            @* URL da imagem *@
+            <div class="form-group">
+                <label>URL DA IMAGEM (BANNER)</label>
+                <InputText @bind-Value="novaViagem.FotoUrl" placeholder="Ex: banner-rio.webp" class="form-control" />
+            </div>
+
+            @* Botões de Ação *@
+            <div class="form-actions">
+                <button type="button" @onclick='() => Navigation.NavigateTo("/poslogin")' class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-save" disabled="@estaProcessando">
+                    @(estaProcessando ? "Salvando..." : "Criar Viagem")
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <p>&copy; 2026 Billet - Todos os direitos reservados.</p>
+</footer>
+
+@code {
+    private Viagem novaViagem = new();
+    private bool estaProcessando = false;
+    private bool exibirSucesso = false;
+    private bool exibirErro = false;
+    private string mensagemErro = "";
+
+    private async Task SalvarViagem()
+    {
+        estaProcessando = true;
+
+        var response = await ViagemService.CriarViagemAsync(novaViagem);
+
+        if (string.IsNullOrEmpty(response))
+        {
+            exibirErro = false;
+            exibirSucesso = true;
+            StateHasChanged();
+            await Task.Delay(2000);
+            Navigation.NavigateTo("/poslogin");
+        }
+        else
+        {
+            exibirErro = true;
+            mensagemErro = response;
+            estaProcessando = false;
+        }
+    }
+}

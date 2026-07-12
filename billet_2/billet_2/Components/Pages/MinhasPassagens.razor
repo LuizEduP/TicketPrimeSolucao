@@ -1,0 +1,190 @@
+@page "/minhaspassagens"
+@using billet_2.Models
+@rendermode RenderMode.InteractiveServer
+@inject NavigationManager Navigation
+@inject billet_2.Services.PassagemService PassagemService
+@inject billet_2.Services.ViagemService ViagemService
+
+@* --- 1. NAVBAR --- *@
+<nav class="navbar-top">
+    <a href="/poslogin" class="brand-button">
+        BiLleT*
+    </a>
+</nav>
+
+@* --- 2. CONTEÚDO DAS PASSAGENS --- *@
+<main class="tickets-wrapper">
+    <div class="tickets-container">
+        <h1 class="tickets-title">Minhas Passagens</h1>
+
+        @* Campo de busca de CPF *@
+        <div class="cpf-search">
+            <input type="text" @bind="cpfBusca" placeholder="Digite seu CPF (000.000.000-00)" class="form-control" maxlength="14" />
+            <button @onclick="BuscarPassagens" class="btn-save" disabled="@string.IsNullOrWhiteSpace(cpfBusca)">
+                Buscar
+            </button>
+        </div>
+
+        @if (estaBuscando)
+        {
+            <div class="text-center py-5">
+                <p style="color: #888;">Buscando passagens...</p>
+            </div>
+        }
+        else if (exibirErro)
+        {
+            <div class="alert alert-danger text-center">
+                @mensagemErro
+            </div>
+        }
+        else if (!cpfBuscado)
+        {
+            <div class="text-center py-5">
+                <h2 style="color: #666;">Informe seu CPF para consultar suas passagens.</h2>
+            </div>
+        }
+        else if (!passagens.Any())
+        {
+            <div class="text-center py-5">
+                <h2 style="color: #666;">Nenhuma passagem encontrada.</h2>
+                <button @onclick='() => Navigation.NavigateTo("/")' class="btn-add-more mt-3">Ver Viagens Disponíveis</button>
+            </div>
+        }
+        else
+        {
+            @foreach (var passagem in passagens)
+            {
+                <div class="ticket-item">
+                    @* Ícone da passagem *@
+                    <div class="ticket-img-box">
+                        <div class="ticket-icon">
+                            🎫
+                        </div>
+                    </div>
+
+                    @* Detalhes da Passagem *@
+                    <div class="ticket-info">
+                        <h3>@detalhesViagens[passagem.ViagemId].Origem → @detalhesViagens[passagem.ViagemId].Destino</h3>
+                        <p class="ticket-meta">
+                            Assento @detalhesAssentos[passagem.AssentoId]
+                            • @detalhesViagens[passagem.ViagemId].DataPartida.ToString("dd/MM/yyyy HH:mm")
+                        </p>
+                        <div class="ticket-badge-row">
+                            <span class="badge-status @GetClasseStatus(passagem.Status)">
+                                @passagem.Status.ToUpper()
+                            </span>
+                            <span class="ticket-date">Comprado em @passagem.DataCompra.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(passagem.CupomUtilizado))
+                        {
+                            <p class="cupom-info">🎟️ Cupom: @passagem.CupomUtilizado</p>
+                        }
+                    </div>
+
+                    @* Preço e Ações *@
+                    <div class="ticket-action-price">
+                        <span class="ticket-price">R$ @passagem.PrecoPago.ToString("N2")</span>
+                        @if (passagem.Status == "Ativa")
+                        {
+                            <button class="btn-remove" @onclick="() => CancelarPassagem(passagem.Id)">
+                                Cancelar
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</main>
+
+<footer class="site-footer">
+    <p>&copy; 2026 Billet - Todos os direitos reservados.</p>
+</footer>
+
+@code {
+    private string cpfBusca = "";
+    private bool cpfBuscado = false;
+    private bool estaBuscando = false;
+    private bool exibirErro = false;
+    private string mensagemErro = "";
+
+    private List<Passagem> passagens = new();
+    private Dictionary<int, Viagem> detalhesViagens = new();
+    private Dictionary<int, string> detalhesAssentos = new();
+
+    private async Task BuscarPassagens()
+    {
+        if (string.IsNullOrWhiteSpace(cpfBusca))
+            return;
+
+        estaBuscando = true;
+        exibirErro = false;
+        StateHasChanged();
+
+        var resultado = await PassagemService.ListarPorUsuarioAsync(cpfBusca.Trim());
+
+        if (resultado == null)
+        {
+            exibirErro = true;
+            mensagemErro = "Erro ao consultar passagens.";
+            estaBuscando = false;
+            return;
+        }
+
+        passagens = resultado;
+        cpfBuscado = true;
+        estaBuscando = false;
+
+        // Carrega detalhes das viagens e assentos
+        await CarregarDetalhes();
+    }
+
+    private async Task CarregarDetalhes()
+    {
+        detalhesViagens.Clear();
+        detalhesAssentos.Clear();
+
+        foreach (var passagem in passagens)
+        {
+            if (!detalhesViagens.ContainsKey(passagem.ViagemId))
+            {
+                var viagem = await ViagemService.BuscarPorIdAsync(passagem.ViagemId);
+                if (viagem != null)
+                    detalhesViagens[passagem.ViagemId] = viagem;
+            }
+
+            if (!detalhesAssentos.ContainsKey(passagem.AssentoId))
+            {
+                detalhesAssentos[passagem.AssentoId] = $"#{passagem.AssentoId}";
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task CancelarPassagem(int id)
+    {
+        var erro = await PassagemService.CancelarPassagemAsync(id);
+
+        if (erro == null)
+        {
+            await BuscarPassagens();
+        }
+        else
+        {
+            exibirErro = true;
+            mensagemErro = erro;
+        }
+    }
+
+    private string GetClasseStatus(string status)
+    {
+        return status switch
+        {
+            "Ativa" => "status-ativa",
+            "Cancelada" => "status-cancelada",
+            "Utilizada" => "status-utilizada",
+            _ => "status-cancelada"
+        };
+    }
+}

@@ -1,0 +1,131 @@
+﻿@page "/vendas/{Id:int}"
+@using billet_2.Models
+@inject billet_2.Services.EventoService EventoService
+@inject NavigationManager Navigation
+@inject billet_2.Services.AuthService AuthService
+@rendermode RenderMode.InteractiveServer
+@inject HttpClient Http
+
+@* --- 1. BARRA DE NAVEGAÇÃO --- *@
+<nav class="navbar-top">
+    @* Redireciona para poslogin para manter o fluxo de usuário logado *@
+    <a href="/poslogin" class="brand-button"> BiLleT* </a>
+</nav>
+
+@if (evento == null)
+{
+    <div class="container text-center py-5">
+        <div class="spinner-border text-dark" role="status"></div>
+        <p class="mt-3">Buscando detalhes do evento...</p>
+    </div>
+}
+else
+{
+    @* --- 2. SEÇÃO DO BANNER PRINCIPAL DINÂMICO --- *@
+    <div class="hero-container">
+        @* Fundo desfocado dinâmico *@
+        <img src="@(string.IsNullOrEmpty(evento.FotoUrl) ? "default.jpg" : evento.FotoUrl)"
+             class="img-fundo-blur" alt="Fundo Desfocado" />
+
+        <div class="card-frente-container">
+            <div class="photo-column">
+                <img src="@(string.IsNullOrEmpty(evento.FotoUrl) ? "default.jpg" : evento.FotoUrl)"
+                     class="img-card-frente" alt="@evento.Nome" />
+            </div>
+
+            <div class="info-column">
+                <div class="content-padding">
+                    <h1 class="event-title">@evento.Nome</h1>
+                    
+                    <div class="meta-data">
+                        <div class="meta-item">
+                            <span class="label">LOCAL</span>
+                            <span class="value">@evento.Local</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label">HORÁRIO</span>
+                            @* Formata a hora a partir do DateTime do banco *@
+                            <span class="value">@evento.Data.ToString("HH:mm")h</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label">DATA</span>
+                            <span class="value">@evento.Data.ToString("dd/MM/yyyy")</span>
+                        </div>
+                    </div>
+
+                    <div class="about-section">
+                        <h3>SOBRE O EVENTO</h3>
+                        <p>@evento.Descricao</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* --- 3. SEÇÃO DE SETORES --- *@
+    <section class="sectors-section">
+        <div class="sectors-container">
+            @if(AuthService.EstaLogado){
+                @* QUADRADO VIP *@
+                @if(!AuthService.UsuarioLogado.Adm){
+                    <div class="sector-card vip-card" @onclick='() => SelecionarIngresso("VIP", (float)(evento.ValorIngresso * 1.5))'>
+                        <div class="sector-card-inner">
+                            <span class="sector-emoji">👑</span>
+                            <span class="sector-label">VIP</span>
+                            <span class="sector-price">R$ @((evento.ValorIngresso * 1.5).ToString("N2"))</span>
+                        </div>
+                    </div>
+
+                    @* QUADRADO PADRÃO *@
+                    <div class="sector-card normal-card" @onclick='() => SelecionarIngresso("NORMAL", evento.ValorIngresso)'>
+                        <div class="sector-card-inner">
+                            <span class="sector-emoji">🎫</span>
+                            <span class="sector-label">NORMAL</span>
+                            <span class="sector-price">R$ @evento.ValorIngresso.ToString("N2")</span>
+                        </div>
+                    </div>
+                }
+            }else{
+                <div class="sector-card vip-card" @onclick='() => SelecionarIngresso("VIP", (float)(evento.ValorIngresso * 1.5))'>
+                        <div class="sector-card-inner">
+                            <span class="sector-emoji">👑</span>
+                            <span class="sector-label">VIP</span>
+                            <span class="sector-price">R$ @((evento.ValorIngresso * 1.5).ToString("N2"))</span>
+                        </div>
+                    </div>
+
+                    @* QUADRADO PADRÃO *@
+                    <div class="sector-card normal-card" @onclick='() => SelecionarIngresso("NORMAL", evento.ValorIngresso)'>
+                        <div class="sector-card-inner">
+                            <span class="sector-emoji">🎫</span>
+                            <span class="sector-label">NORMAL</span>
+                            <span class="sector-price">R$ @evento.ValorIngresso.ToString("N2")</span>
+                        </div>
+                    </div>
+            }
+        </div>
+    </section>
+}
+
+<footer class="site-footer">
+    <p>&copy; 2026 Billet - Todos os direitos reservados.</p>
+</footer>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Evento? evento;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Busca o evento específico clicado na Home/Poslogin usando o ID da URL
+        evento = await EventoService.BuscarPorIdAsync(Id);
+    }
+
+    private void SelecionarIngresso(string setor, float preco)
+    {
+        var dados = $"{evento?.Id}|{setor}|{preco}";
+        Navigation.NavigateTo($"/meusingressos?comprar={dados}");
+    }
+}

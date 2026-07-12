@@ -1,0 +1,204 @@
+.navbar-top {
+    background-color: #1a1a1a;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    z-index: 20;
+    border-bottom: 2px solid #1a1a1a;
+}
+
+.brand-button {
+    font-family: 'TanNimbus', sans-serif;
+    font-size: 2.8rem;
+    color: #EDEDED;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+    .brand-button:hover {
+        color: #FFFFFF;
+        transform: scale(1.05);
+    }
+
+.navbar-top {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* --- FUNDO E ESTRUTURA --- */
+.tickets-wrapper {
+    background-color: #000;
+    min-height: 85vh;
+    padding: 60px 20px;
+    color: white;
+}
+
+.tickets-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.tickets-title {
+    font-family: 'TanNimbus', sans-serif;
+    font-size: 3.5rem;
+    margin-bottom: 50px;
+}
+
+/* --- CARD DO INGRESSO --- */
+.ticket-item {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 30px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 25px;
+    gap: 30px;
+    transition: transform 0.3s ease;
+}
+
+    .ticket-item:hover {
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+.ticket-img-box img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+.ticket-info {
+    flex-grow: 1;
+}
+
+    .ticket-info h3 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+.ticket-meta {
+    color: #888;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+/* Badges de Setor */
+.badge-sector {
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 8px 16px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.vip-gold {
+    background: rgba(255, 215, 0, 0.1);
+    color: #FFD700;
+    border: 1px solid #FFD700;
+}
+
+.normal-white {
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFFFFF;
+    border: 1px solid #FFFFFF;
+}
+
+.ticket-date {
+    margin-left: 15px;
+    color: #555;
+    font-weight: 600;
+}
+
+/* Preço e Botão Remover */
+.ticket-action-price {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ticket-price {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin-bottom: 15px;
+}
+
+.btn-remove {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* --- RESUMO DE COMPRA --- */
+.checkout-summary {
+    margin-top: 60px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 40px;
+    border-radius: 24px;
+    border-top: 1px solid #333;
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    color: #888;
+    font-size: 1.1rem;
+}
+
+    .summary-line.total {
+        color: #fff;
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-top: 20px;
+        border-top: 1px solid #222;
+        padding-top: 20px;
+    }
+
+.action-buttons {
+    display: flex;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.btn-add-more {
+    flex: 1;
+    background: none;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-checkout {
+    flex: 2;
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 20px;
+    border-radius: 15px;
+    font-weight: 800;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .btn-checkout:hover {
+        background: #FFD700;
+        transform: translateY(-5px);
+    }

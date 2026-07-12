@@ -1,0 +1,14 @@
+@page "/vendas/{Id:int}"
+@inject NavigationManager Navigation
+
+<p>Redirecionando para a nova página de assentos...</p>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Navigation.NavigateTo($"/viagem/{Id}/assentos", replace: true);
+    }
+}

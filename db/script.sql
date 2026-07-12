@@ -1,0 +1,64 @@
+DROP TABLE IF EXISTS Reservas;
+DROP TABLE IF EXISTS Cupons;
+DROP TABLE IF EXISTS Eventos;
+DROP TABLE IF EXISTS Usuarios;
+--usuario-
+CREATE TABLE IF NOT EXISTS "Usuarios" (
+    "Id" SERIAL PRIMARY KEY,
+    "Nome" VARCHAR(255) NOT NULL,
+    "Email" VARCHAR(255) UNIQUE NOT NULL,
+    "Cpf" VARCHAR(14) UNIQUE NOT NULL,
+    "Senha" TEXT NOT NULL,
+	"Adm" BOOL NOT NULL
+);
+
+--eventos
+CREATE TABLE IF NOT EXISTS "Eventos" (
+    "Id" SERIAL PRIMARY KEY,
+    "Nome" VARCHAR(255) NOT NULL,
+    "Descricao" TEXT,
+    "Local" VARCHAR(255),
+    "Data" TIMESTAMP NOT NULL,
+    "QuantidadeIngressos" INT NOT NULL,
+    "ValorIngresso" REAL NOT NULL,
+    "FotoUrl" TEXT
+);
+--cupons
+CREATE TABLE Cupons (
+    Codigo VARCHAR(50) PRIMARY KEY,
+    PorcentagemDesconto NUMERIC(5,2) NOT NULL CHECK (PorcentagemDesconto BETWEEN 0 AND 100),
+    ValorMinimo NUMERIC(10,2) NOT NULL CHECK (ValorMinimo >= 0),
+    Ativo BOOLEAN DEFAULT TRUE,
+    DataCriacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+--reservas
+CREATE TABLE Reservas (
+    Id SERIAL PRIMARY KEY,
+    UsuarioCpf VARCHAR(11) NOT NULL,
+    EventoId INT NOT NULL,
+    CupomUtilizado VARCHAR(50),
+    ValorFinalPago NUMERIC(10,2) NOT NULL CHECK (ValorFinalPago >= 0),
+    DataReserva TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+-- regras
+    CONSTRAINT fk_usuario
+        FOREIGN KEY (UsuarioCpf)
+        REFERENCES Usuarios(Cpf)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_evento
+        FOREIGN KEY (EventoId)
+        REFERENCES Eventos(Id)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_cupom
+        FOREIGN KEY (CupomUtilizado)
+        REFERENCES Cupons(Codigo)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+--indices para otimizar as pesquisas 
+CREATE INDEX idx_reservas_usuario ON Reservas(UsuarioCpf);
+CREATE INDEX idx_reservas_evento ON Reservas(EventoId);
+CREATE INDEX idx_eventos_data ON "Eventos"("Data");

@@ -1,0 +1,307 @@
+@page "/viagem/{ViagemId:int}/assentos"
+@using billet_2.Models
+@using Microsoft.AspNetCore.Components.Forms
+@rendermode RenderMode.InteractiveServer
+@inject billet_2.Services.AssentoService AssentoService
+@inject NavigationManager Navigation
+
+@* --- 1. NAVBAR --- *@
+<nav class="navbar-top">
+    <a href="/" class="brand-button">BiLleT*</a>
+    <div class="nav-actions-right">
+        <a href="/poslogin" class="nav-action-button">
+            ⚙️ PAINEL
+        </a>
+    </div>
+</nav>
+
+@* --- 2. CONTEÚDO PRINCIPAL --- *@
+<main class="mapa-wrapper">
+    <div class="mapa-container">
+        <h1 class="mapa-title">Mapa de Assentos</h1>
+
+        @if (carregando)
+        {
+            <div class="loading-message">
+                ⏳ Carregando mapa de assentos...
+            </div>
+        }
+        else if (erroCarregamento)
+        {
+            <div class="alert alert-danger text-center">
+                @mensagemErro
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button @onclick="CarregarMapa" class="btn-retry">Tentar novamente</button>
+            </div>
+        }
+        else if (!assentos.Any())
+        {
+            <div class="alert alert-warning text-center">
+                Nenhum assento encontrado para esta viagem.
+            </div>
+        }
+        else
+        {
+            @* --- 2.1 LEGENDA --- *@
+            <div class="legenda">
+                <div class="legenda-item">
+                    <span class="seat-icon disponivel"></span> Disponível
+                </div>
+                <div class="legenda-item">
+                    <span class="seat-icon reservado"></span> Reservado
+                </div>
+                <div class="legenda-item">
+                    <span class="seat-icon vendido"></span> Vendido
+                </div>
+                <div class="legenda-item">
+                    <span class="seat-icon indisponivel"></span> Indisponível
+                </div>
+            </div>
+
+            @* --- 2.2 MENSAGENS DE FEEDBACK --- *@
+            @if (exibirSucesso)
+            {
+                <div class="alert alert-success text-center">
+                    ✅ Assento @assentoReservadoNumero reservado com sucesso!
+                </div>
+            }
+            @if (exibirErroReserva)
+            {
+                <div class="alert alert-danger text-center">
+                    @mensagemErroReserva
+                </div>
+            }
+
+            @* --- 2.3 MODAL CPF --- *@
+            @if (mostrarModalCpf)
+            {
+                <div class="modal-overlay" @onclick="FecharModalCpf">
+                    <div class="modal-cpf" @onclick:stopPropagation="true">
+                        <h3>Reservar Assento @assentoSelecionado?.Numero</h3>
+                        <p>Tipo: @assentoSelecionado?.Tipo</p>
+                        <div class="form-group">
+                            <label>SEU CPF</label>
+                            <input type="text" @bind="cpfDigitado" placeholder="000.000.000-00" class="form-control" maxlength="14" />
+                        </div>
+                        <div class="modal-actions">
+                            <button @onclick="FecharModalCpf" class="btn-cancel">Cancelar</button>
+                            <button @onclick="ConfirmarReserva" class="btn-save" disabled="@string.IsNullOrWhiteSpace(cpfDigitado)">
+                                Reservar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @* --- 2.4 MAPA DE ASSENTOS (GRID ÔNIBUS) --- *@
+            <div class="onibus-container">
+                @* Frente do ônibus *@
+                <div class="onibus-frente">
+                    <span>🚌 MOTORISTA</span>
+                </div>
+
+                <div class="onibus-grid">
+                    @foreach (var row in fileiras)
+                    {
+                        <div class="fileira">
+                            <span class="fileira-numero">@row.Key</span>
+                            <div class="assentos-fileira">
+                                @* Lado esquerdo *@
+                                <div class="lado-esquerdo">
+                                    @foreach (var assento in row.Value.Where(a => a.ColunaIndice < colunas / 2.0))
+                                    {
+                                        <button class="seat-btn @GetClasseStatus(assento)"
+                                                disabled="@(!assento.PodeReservar)"
+                                                @onclick='() => SelecionarAssento(assento)'
+                                                title="@assento.Numero - @assento.Tipo - @assento.Status">
+                                            @assento.Numero
+                                        </button>
+                                    }
+                                </div>
+                                @* Corredor central *@
+                                <div class="corredor"></div>
+                                @* Lado direito *@
+                                <div class="lado-direito">
+                                    @foreach (var assento in row.Value.Where(a => a.ColunaIndice >= colunas / 2.0))
+                                    {
+                                        <button class="seat-btn @GetClasseStatus(assento)"
+                                                disabled="@(!assento.PodeReservar)"
+                                                @onclick='() => SelecionarAssento(assento)'
+                                                title="@assento.Numero - @assento.Tipo - @assento.Status">
+                                            @assento.Numero
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @* Traseira do ônibus *@
+                <div class="onibus-traseira">
+                    <span>TRASEIRA</span>
+                </div>
+            </div>
+        }
+    </div>
+</main>
+
+<footer class="site-footer">
+    <p>&copy; 2026 Billet - Todos os direitos reservados.</p>
+</footer>
+
+@code {
+    [Parameter]
+    public int ViagemId { get; set; }
+
+    private List<Assento> assentos = new();
+    private Dictionary<int, List<AssentoExibicao>> fileiras = new();
+    private int colunas;
+    private bool carregando = true;
+    private bool erroCarregamento = false;
+    private string mensagemErro = "";
+
+    private bool mostrarModalCpf = false;
+    private AssentoExibicao? assentoSelecionado;
+    private string cpfDigitado = "";
+    private bool exibirSucesso = false;
+    private bool exibirErroReserva = false;
+    private string mensagemErroReserva = "";
+    private string assentoReservadoNumero = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarMapa();
+    }
+
+    private async Task CarregarMapa()
+    {
+        carregando = true;
+        erroCarregamento = false;
+        exibirSucesso = false;
+        exibirErroReserva = false;
+        mostrarModalCpf = false;
+        StateHasChanged();
+
+        try
+        {
+            var resultado = await AssentoService.ObterMapaAssentosAsync(ViagemId);
+            if (resultado == null)
+            {
+                erroCarregamento = true;
+                mensagemErro = "Viagem não encontrada.";
+                carregando = false;
+                return;
+            }
+
+            assentos = resultado;
+            OrganizarFileiras();
+            carregando = false;
+        }
+        catch (Exception ex)
+        {
+            erroCarregamento = true;
+            mensagemErro = $"Erro ao carregar o mapa: {ex.Message}";
+            carregando = false;
+        }
+    }
+
+    private void OrganizarFileiras()
+    {
+        if (!assentos.Any())
+        {
+            fileiras = new();
+            colunas = 0;
+            return;
+        }
+
+        // Determina o número de colunas (letras únicas)
+        colunas = assentos.Select(a => a.Numero.Last()).Distinct().Count();
+
+        // Agrupa por fileira (número extraído do Numero)
+        var agrupados = new Dictionary<int, List<AssentoExibicao>>();
+
+        foreach (var assento in assentos.OrderBy(a => a.Numero))
+        {
+            // Extrai número da fileira e letra da coluna
+            var numeroStr = new string(assento.Numero.Where(char.IsDigit).ToArray());
+            var letra = assento.Numero.Last();
+
+            if (!int.TryParse(numeroStr, out int fileira))
+                continue;
+
+            if (!agrupados.ContainsKey(fileira))
+                agrupados[fileira] = new();
+
+            agrupados[fileira].Add(new AssentoExibicao
+            {
+                Id = assento.Id,
+                VeiculoId = assento.VeiculoId,
+                Numero = assento.Numero,
+                Tipo = assento.Tipo,
+                Status = assento.Status,
+                ColunaIndice = letra - 'A',
+                PodeReservar = assento.Status == "Disponível"
+            });
+        }
+
+        fileiras = agrupados.OrderBy(f => f.Key)
+                           .ToDictionary(f => f.Key, f => f.Value);
+    }
+
+    private void SelecionarAssento(AssentoExibicao assento)
+    {
+        assentoSelecionado = assento;
+        cpfDigitado = "";
+        mostrarModalCpf = true;
+    }
+
+    private void FecharModalCpf()
+    {
+        mostrarModalCpf = false;
+        assentoSelecionado = null;
+        cpfDigitado = "";
+    }
+
+    private async Task ConfirmarReserva()
+    {
+        if (assentoSelecionado == null || string.IsNullOrWhiteSpace(cpfDigitado))
+            return;
+
+        mostrarModalCpf = false;
+        var erro = await AssentoService.ReservarAssentoAsync(assentoSelecionado.Id, cpfDigitado.Trim());
+
+        if (erro == null)
+        {
+            assentoReservadoNumero = assentoSelecionado.Numero;
+            exibirSucesso = true;
+            exibirErroReserva = false;
+            await CarregarMapa();
+        }
+        else
+        {
+            exibirErroReserva = true;
+            exibirSucesso = false;
+            mensagemErroReserva = erro;
+        }
+    }
+
+    private string GetClasseStatus(AssentoExibicao assento)
+    {
+        return assento.Status switch
+        {
+            "Disponível" => "seat-disponivel",
+            "Reservado" => "seat-reservado",
+            "Vendido" => "seat-vendido",
+            "Indisponível" => "seat-indisponivel",
+            _ => "seat-indisponivel"
+        };
+    }
+
+    private class AssentoExibicao : Assento
+    {
+        public int ColunaIndice { get; set; }
+        public bool PodeReservar { get; set; }
+    }
+}

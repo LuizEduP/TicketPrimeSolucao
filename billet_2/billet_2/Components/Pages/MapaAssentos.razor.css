@@ -1,0 +1,361 @@
+
+/* 1. FONTE E BASE */
+@font-face {
+    font-family: 'TanNimbus';
+    src: url('/fonts/Tan-Nimbus.otf') format('opentype');
+}
+
+/* 2. NAVBAR */
+.navbar-top {
+    background-color: #1a1a1a;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 100;
+    border-bottom: 2px solid #1a1a1a;
+}
+
+.brand-button {
+    font-family: 'TanNimbus', sans-serif;
+    font-size: 2.8rem;
+    color: #EDEDED;
+    text-decoration: none !important;
+}
+
+.nav-actions-right {
+    position: absolute;
+    right: 40px;
+    display: flex;
+    gap: 15px;
+}
+
+.nav-action-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    transition: 0.3s;
+}
+
+    .nav-action-button:hover {
+        background: #fff;
+        color: #000;
+    }
+
+/* 3. MAPA WRAPPER */
+.mapa-wrapper {
+    background-color: #000;
+    min-height: 90vh;
+    padding: 60px 20px;
+    color: white;
+}
+
+.mapa-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.mapa-title {
+    font-family: 'TanNimbus', sans-serif;
+    font-size: 3rem;
+    margin-bottom: 30px;
+}
+
+.loading-message {
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 60px 0;
+    color: #888;
+}
+
+.btn-retry {
+    background: #FFD700;
+    color: #000;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .btn-retry:hover {
+        transform: translateY(-2px);
+    }
+
+/* 4. LEGENDA */
+.legenda {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+.seat-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+}
+
+    .seat-icon.disponivel {
+        background-color: #2ecc71;
+    }
+
+    .seat-icon.reservado {
+        background-color: #f39c12;
+    }
+
+    .seat-icon.vendido {
+        background-color: #e74c3c;
+    }
+
+    .seat-icon.indisponivel {
+        background-color: #555;
+    }
+
+/* 5. CONTAINER DO ÔNIBUS */
+.onibus-container {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 20px;
+}
+
+.onibus-frente, .onibus-traseira {
+    text-align: center;
+    padding: 10px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #666;
+    letter-spacing: 3px;
+}
+
+.onibus-frente {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 25px;
+}
+
+.onibus-traseira {
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    margin-top: 25px;
+}
+
+/* 6. GRID DE ASSENTOS */
+.onibus-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.fileira {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.fileira-numero {
+    width: 30px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #666;
+    flex-shrink: 0;
+}
+
+.assentos-fileira {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    gap: 0;
+}
+
+.lado-esquerdo, .lado-direito {
+    display: flex;
+    gap: 6px;
+}
+
+.corredor {
+    width: 40px;
+    flex-shrink: 0;
+}
+
+/* 7. BOTÕES DE ASSENTO */
+.seat-btn {
+    width: 55px;
+    height: 55px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #fff;
+    position: relative;
+}
+
+    .seat-btn:hover:not(:disabled) {
+        transform: scale(1.1);
+        z-index: 10;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .seat-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.8;
+    }
+
+/* Cores por status */
+.seat-disponivel {
+    background-color: #2ecc71;
+}
+
+    .seat-disponivel:hover:not(:disabled) {
+        background-color: #27ae60;
+        box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
+    }
+
+.seat-reservado {
+    background-color: #f39c12;
+}
+
+.seat-vendido {
+    background-color: #e74c3c;
+}
+
+.seat-indisponivel {
+    background-color: #555;
+}
+
+/* 8. MODAL CPF */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-cpf {
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    width: 400px;
+    max-width: 90vw;
+    color: white;
+}
+
+    .modal-cpf h3 {
+        font-family: 'TanNimbus', sans-serif;
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+    }
+
+    .modal-cpf p {
+        color: #888;
+        margin-bottom: 20px;
+    }
+
+    .modal-cpf .form-group {
+        margin-bottom: 25px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-cpf label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #666;
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+    }
+
+    .modal-cpf input {
+        background: #111;
+        border: 1px solid #333;
+        padding: 15px;
+        border-radius: 12px;
+        color: white;
+        font-size: 1rem;
+    }
+
+        .modal-cpf input:focus {
+            outline: none;
+            border-color: #FFD700;
+        }
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.btn-cancel {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+    .btn-cancel:hover {
+        color: #fff;
+    }
+
+.btn-save {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .btn-save:hover:not(:disabled) {
+        background: #FFD700;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.25);
+    }
+
+    .btn-save:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+/* 9. RODAPÉ */
+.site-footer {
+    background-color: #1a1a1a;
+    color: #444;
+    padding: 40px;
+    text-align: center;
+}

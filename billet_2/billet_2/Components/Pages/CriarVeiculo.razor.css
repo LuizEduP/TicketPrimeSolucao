@@ -1,0 +1,219 @@
+
+/* 1. FONTE E BASE */
+@font-face {
+    font-family: 'TanNimbus';
+    src: url('/fonts/Tan-Nimbus.otf') format('opentype');
+}
+
+/* 2. NAVBAR COM DOIS BOTÕES */
+.navbar-top {
+    background-color: #1a1a1a;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 100;
+    border-bottom: 2px solid #1a1a1a;
+}
+
+.brand-button {
+    font-family: 'TanNimbus', sans-serif;
+    font-size: 2.8rem;
+    color: #EDEDED;
+    text-decoration: none !important;
+}
+
+.nav-actions-right {
+    position: absolute;
+    right: 40px;
+    display: flex;
+    gap: 15px;
+}
+
+.nav-action-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    transition: 0.3s;
+}
+
+    .nav-action-button:hover {
+        background: #fff;
+        color: #000;
+    }
+
+.create-btn {
+    border-color: #FFD700;
+    color: #FFD700;
+}
+
+    .create-btn:hover {
+        background: #FFD700;
+        color: #000;
+    }
+
+/* 3. TELA DE CRIAR EVENTO */
+.create-wrapper {
+    background-color: #000;
+    min-height: 90vh;
+    padding: 80px 20px;
+    color: white;
+}
+
+.create-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.create-title {
+    font-family: 'TanNimbus', sans-serif;
+    font-size: 3.5rem;
+    margin-bottom: 50px;
+}
+
+.create-form {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 40px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-group {
+    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #666;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+input, textarea {
+    background: #111;
+    border: 1px solid #333;
+    padding: 15px;
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+    input:focus, textarea:focus {
+        outline: none;
+        border-color: #FFD700;
+    }
+
+/* 4. ÁREA DE UPLOAD DE IMAGEM (NOVO) */
+.image-upload-wrapper {
+    width: 100%;
+}
+
+.custom-file-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 220px;
+    background: #0a0a0a;
+    border: 2px dashed #333;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    padding: 20px;
+}
+
+    .custom-file-upload:hover {
+        border-color: #FFD700;
+        background: rgba(255, 215, 0, 0.02);
+    }
+
+.upload-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.upload-text {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.custom-file-upload small {
+    color: #555;
+    font-size: 0.8rem;
+}
+
+/* Esconde o input original do sistema */
+input[type="file"] {
+    display: none;
+}
+
+/* 5. BOTÕES DE AÇÃO */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.btn-cancel {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+    .btn-cancel:hover {
+        color: #fff;
+    }
+
+.btn-save {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .btn-save:hover {
+        background: #FFD700;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2);
+    }
+
+/* 6. RODAPÉ */
+.site-footer {
+    background-color: #1a1a1a;
+    color: #444;
+    padding: 40px;
+    text-align: center;
+}

@@ -1,0 +1,87 @@
+@page "/"
+@using billet_2.Models
+@inject billet_2.Services.ViagemService ViagemService
+
+<div class="page-container">
+    @* --- SEÇÃO 1: HERO BANNER (VÍDEO) --- *@
+    <section class="hero-section">
+        <div class="video-wrapper">
+            <video autoplay loop muted playsinline class="video-element">
+                <source src="videos/video1.mp4" type="video/mp4" />
+                Seu navegador não suporta vídeos.
+            </video>
+            <div class="video-overlay"></div>
+        </div>
+
+        <div class="hero-content">
+            <div class="container text-center text-white">
+                <h1 class="hero-title">B i L l e T *</h1>
+                <p class="hero-text">
+                    O Billet não é apenas uma plataforma de vendas; é o ponto de encontro entre quem viaja e quem vive
+                    momentos inesquecíveis.
+                </p>
+                <hr class="hero-hr" />
+                <a href="/cadastro" class="btn-hero">Faça seu cadastro e seja família Billet *</a>
+            </div>
+        </div>
+    </section>
+
+    @* --- SEÇÃO 2: VIAGENS DINÂMICAS --- *@
+    <section class="viagens-section">
+        <div class="container py-5">
+            <h2 class="section-title">Nossas viagens ↷</h2>
+            
+            <div class="row g-4">
+                @if (viagens == null)
+                {
+                    <p class="text-center w-100">Carregando viagens...</p>
+                }
+                else if (!viagens.Any())
+                {
+                    <p class="text-center w-100">Nenhuma viagem disponível no momento. Volte logo!</p>
+                }
+                else
+                {
+                    @foreach (var viagem in viagens)
+                    {
+                        <div class="col-12 col-md-4">
+                            <div class="viagem-card shadow-sm">
+                                <div class="viagem-img-cap">
+                                    @if (!string.IsNullOrEmpty(viagem.FotoUrl))
+                                    {
+                                        <img src="@viagem.FotoUrl" alt="@viagem.Origem → @viagem.Destino" style="width:100%; height:100%; object-fit:cover;" />
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">FOTO DA VIAGEM</span>
+                                    }
+                                </div>
+                                <div class="viagem-card-body">
+                                    <h5>@viagem.Origem → @viagem.Destino</h5>
+                                    <p>@viagem.Descricao</p>
+                                    <small>📅 @viagem.DataPartida.ToString("dd/MM/yyyy HH:mm")</small>
+                                    
+                                    <a href="/viagem/@viagem.Id/assentos" class="viagem-link">Ver assentos →</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </section>
+
+    @* --- SEÇÃO 3: RODAPÉ --- *@
+    <footer class="site-footer">
+        <p>&copy; 2026 Billet - Todos os direitos reservados.</p>
+    </footer>
+</div>
+
+@code {
+    private List<Viagem>? viagens;
+
+    protected override async Task OnInitializedAsync()
+    {
+        viagens = await ViagemService.ListarViagensAsync();
+    }
+}
